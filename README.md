@@ -63,3 +63,7 @@ curl -H "Content-Type: application/json" -d '{"Action": "DELETE", "UserName": "g
 
 See logs [here](https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#logStream:group=/aws/lambda/dns-manager;streamFilter=typeLogStreamPrefix)
 
+## DB records
+
+See DB records [here](https://eu-central-1.console.aws.amazon.com/dynamodb/home?region=eu-central-1#tables:selected=dns-manager;tab=items)
+
