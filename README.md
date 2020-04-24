@@ -48,12 +48,18 @@ curl -H "Content-Type: application/json" -d '{"Action": "CREATE", "UserName": "g
 ## Update record
 
 ~~~~
-# curl -H "Content-Type: application/json" -d '{"Action": "UPDATE", "UserName": "gelo22", "NameServers": "ns-578.awsdns-08.net.,ns-499.awsdns-62.com.", "ZoneID": "Z06877161DK1SC4LDL8T3", "DomainName": "cluster.dev", "Email": "gelo@shalb.com"}' https://usgrtk5fqj.execute-api.eu-central-1.amazonaws.com/prod
+curl -H "Content-Type: application/json" -d '{"Action": "UPDATE", "UserName": "gelo22", "NameServers": "ns-578.awsdns-08.net.,ns-499.awsdns-62.com.", "ZoneID": "Z06877161DK1SC4LDL8T3", "DomainName": "cluster.dev", "Email": "gelo@shalb.com"}' https://usgrtk5fqj.execute-api.eu-central-1.amazonaws.com/prod
 ~~~~
 
 ## Delete record
 
 ~~~~
-# curl -H "Content-Type: application/json" -d '{"Action": "DELETE", "UserName": "gelo22", "ZoneID": "Z06877161DK1SC4LDL8T3", "DomainName": "cluster.dev", "Email": "gelo@shalb.com"}' https://usgrtk5fqj.execute-api.eu-central-1.amazonaws.com/prod
+curl -H "Content-Type: application/json" -d '{"Action": "DELETE", "UserName": "gelo22", "ZoneID": "Z06877161DK1SC4LDL8T3", "DomainName": "cluster.dev", "Email": "gelo@shalb.com"}' https://usgrtk5fqj.execute-api.eu-central-1.amazonaws.com/prod
 ~~~~
+
+# Debug
+
+## Logs 
+
+See logs [here](https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#logStream:group=/aws/lambda/dns-manager;streamFilter=typeLogStreamPrefix)
 

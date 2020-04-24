@@ -28,6 +28,10 @@ def data_from_event_to_config(event):
     if not conf['DomainName'].endswith('.'):
         conf['DomainName'] += '.'
     conf['NameServers_list'] = conf['NameServers'].split(',')
+    for index in range(len(conf['NameServers_list'])):
+        ns = conf['NameServers_list'][index]
+        if not ns.endswith('.'):
+            conf['NameServers_list'][index] += '.'
     log.debug('Config content: {}'.format(conf))
 
 def validate_event(event):
@@ -82,8 +86,12 @@ def get_record_from_route53():
         MaxItems='1'
     )
     log.debug('Getting record from route53 zone - Response: "{}"'.format(response))
-    record_name = response['ResourceRecordSets'][0]['Name']
-    record_type = response['ResourceRecordSets'][0]['Type']
+    if response['ResourceRecordSets']:
+        record_name = response['ResourceRecordSets'][0]['Name']
+        record_type = response['ResourceRecordSets'][0]['Type']
+    else:
+        conf['route53_record'] = False
+        return
     if record_name == conf['record_name'] and record_type == 'NS':
         conf['route53_record'] = response['ResourceRecordSets'][0]['ResourceRecords']
     else:
@@ -308,6 +316,7 @@ def lambda_handler(event, context):
     except:
         trace = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         log.critical(trace)
+        log.info(conf)
         conf['response'] = 'ERROR'
         return response()
 
@@ -325,3 +334,4 @@ if __name__ == "__main__":
         "Email": "my-user@my-domain.local.lan"
     }
     print(lambda_handler(test_event, None))
+
