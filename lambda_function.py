@@ -3,6 +3,7 @@ import logging
 import sys
 import traceback
 import os
+import datetime
 
 import boto3
 
@@ -20,6 +21,69 @@ FORMAT = '%(asctime)s %(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT)
 
 
+def validate_event(event):
+    '''Check if request has valid input and permissions to manage records.'''
+    if isinstance(event['body'], str):
+        event['body'] = json.loads(event['body'])
+    print(json.dumps({'event': event}, default=str))
+    data = event['body']
+    if len(str(data)) > 512:
+        #log.error('Input is to long')
+        print(json.dumps({'message': 'Input is to long'}, default=str))
+        sys.exit('Input is to long')
+    try:
+        json_test = json.dumps(data)
+    except:
+        #log.error('json from event["body"] is not valid')
+        print(json.dumps({'message': 'json from event["body"] is not valid'}, default=str))
+        sys.exit('json from event["body"] is not valid')
+    validate_event_keys(data)
+    validate_event_action(data)
+    validate_event_username(data)
+    validate_event_nameservers(data)
+    validate_event_zoneid(data)
+    validate_event_domainname(data)
+    validate_event_email(data)
+
+def validate_event_action(data):
+    '''Check if request has valid Action key.'''
+    # Action unknown
+    if data.get('Action') not in ['CREATE', 'DELETE', 'UPDATE']:
+        #log.error('Action is not valid')
+        print(json.dumps({'message': 'Action is not valid'}, default=str))
+        sys.exit('Action is not valid')
+
+def validate_event_keys(data):
+    '''Check if request has mandatory keys.'''
+    # Not mandatory 'NameServers' handler for 'Action': 'DELETE'
+    if data['Action'] == 'DELETE' and 'NameServers' not in data:
+        data['NameServers'] = 'fake1,fake2'
+    for key in ['Action', 'UserName', 'NameServers', 'ZoneID', 'DomainName', 'Email']:
+        if key not in data:
+           #log.error('Key: "{}" is not set'.format(key))
+            print(json.dumps({'message': 'Key is not set', 'key': key}, default=str))
+            sys.exit('Key: "{}" is not set'.format(key))
+
+def validate_event_username(data):
+    '''Check if request has valid UserName key.'''
+    pass
+
+def validate_event_nameservers(data):
+    '''Check if request has valid NameServers key.'''
+    pass
+
+def validate_event_zoneid(data):
+    '''Check if request has valid ZoneID key.'''
+    pass
+
+def validate_event_domainname(data):
+    '''Check if request has valid DomainName key.'''
+    pass
+
+def validate_event_email(data):
+    '''Check if request has valid Email key.'''
+    pass
+
 def data_from_event_to_config(event):
     '''Add data from "event" to dictionary with config options.'''
     for key in event['body']:
@@ -32,35 +96,9 @@ def data_from_event_to_config(event):
         ns = conf['NameServers_list'][index]
         if not ns.endswith('.'):
             conf['NameServers_list'][index] += '.'
+    conf['source_ip'] = event['headers']['X-Forwarded-For']
     #log.debug('Config content: {}'.format(conf))
     print(json.dumps(conf, default=str))
-
-def validate_event(event):
-    '''Check if request has valid input and permissions to manage records.'''
-    if isinstance(event['body'], str):
-        event['body'] = json.loads(event['body'])
-    data = event['body']
-    # Not mandatory 'NameServers' handler for 'Action' == 'DELETE'
-    if data['Action'] == 'DELETE' and 'NameServers' not in data:
-        data['NameServers'] = 'fake1,fake2'
-    if len(str(data)) > 512:
-        #log.error('Input is to long')
-        print(json.dumps({'message': 'Input is to long'}, default=str))
-        sys.exit('Input is to long')
-    try:
-        json_test = json.dumps(data)
-    except:
-        #log.error('json from event["body"] is not valid')
-        print(json.dumps({'message': 'json from event["body"] is not valid'}, default=str))
-        sys.exit('json from event["body"] is not valid')
-    for key in ['Action', 'UserName', 'NameServers', 'ZoneID', 'DomainName', 'Email']:
-        if key not in data:
-            log.error('Key: "{}" is not set'.format(key))
-            sys.exit('Key: "{}" is not set'.format(key))
-    if data.get('Action') not in ['CREATE', 'DELETE', 'UPDATE']:
-        #log.error('Action is not valid')
-        print(json.dumps({'message': 'Action is not valid'}, default=str))
-        sys.exit('Action is not valid')
 
 def check_if_request_authorized():
     '''Check if request has valid input and permissions to manage records.'''
@@ -299,11 +337,11 @@ def update_record_in_route53():
 
 def get_item_from_dynamodb():
     '''Get item from DynamoDB table.'''
-    conf['ID'] = '{}_{}_{}_{}'.format(
+    conf['ID'] = '{}_{}'.format(
         conf['UserName'],
-        conf['DomainName'],
-        conf['ZoneID'],
-        conf['Email']
+        conf['DomainName']
+       #conf['ZoneID'],
+       #conf['Email']
     )
     data = {
         'ID': {
@@ -319,6 +357,16 @@ def get_item_from_dynamodb():
         json.dumps(
             {
                 'message': 'Getting item from DynamoDB',
+                'id': conf['ID'],
+                'key': data
+            },
+            default=str
+        )
+    )
+    print(
+        json.dumps(
+            {
+                'message': 'Getting item from DynamoDB',
                 'response': response
             },
             default=str
@@ -328,6 +376,7 @@ def get_item_from_dynamodb():
 
 def add_item_to_dynamodb():
     '''Add item to DynamoDB table.'''
+    last_update_time = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     data = {
         'ID': {
             'S': conf['ID']
@@ -336,7 +385,9 @@ def add_item_to_dynamodb():
         'DomainName': {'S': conf['DomainName']},
         'ZoneID': {'S': conf['ZoneID']},
         'NameServers': {'S': conf['NameServers']},
-        'Email': {'S': conf['Email']}
+        'Email': {'S': conf['Email']},
+        'LastUpdateUTC': {'S': last_update_time},
+        'SourceIP': {'S': conf['source_ip']}
     }
     response = dynamodb.put_item(
         TableName=conf['dynamodb_table_name'],
@@ -356,6 +407,7 @@ def add_item_to_dynamodb():
 
 def update_item_in_dynamodb():
     '''Update item in DynamoDB table.'''
+    last_update_time = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     data = {
         'ID': {
             'S': conf['ID']
@@ -364,7 +416,9 @@ def update_item_in_dynamodb():
         'DomainName': {'S': conf['DomainName']},
         'ZoneID': {'S': conf['ZoneID']},
         'NameServers': {'S': conf['NameServers']},
-        'Email': {'S': conf['Email']}
+        'Email': {'S': conf['Email']},
+        'LastUpdateUTC': {'S': last_update_time},
+        'SourceIP': {'S': conf['source_ip']}
     }
     response = dynamodb.put_item(
         TableName=conf['dynamodb_table_name'],
@@ -469,34 +523,36 @@ def action_delete():
 
 def action_update():
     '''Function to update record.'''
-    if conf['dynamodb_record']:
-        update_item_in_dynamodb()
-        if conf['route53_record']:
-            update_record_in_route53()
-        else:
-           #log.debug('Record: "{}" not exists, nothing to update'.format(conf['record_name']))
-            print(
-                json.dumps(
-                    {
-                        'message': 'Record not exists, nothing to update',
-                        'record': conf['record_name']
-                    },
-                    default=str
-                )
-            )
-            conf['response'] = 'Not exists'
-    else:
-       #log.debug('Item with ID: "{}" not exists, nothing to update'.format(conf['ID']))
-        print(
-            json.dumps(
-                {
-                    'message': 'Item not exists, nothing to update',
-                    'id': conf['ID']
-                },
-                default=str
-            )
-        )
-        conf['response'] = 'Not exists'
+    update_item_in_dynamodb()
+    update_record_in_route53()
+   #if conf['dynamodb_record']:
+   #    update_item_in_dynamodb()
+   #    if conf['route53_record']:
+   #        update_record_in_route53()
+   #    else:
+   #       #log.debug('Record: "{}" not exists, nothing to update'.format(conf['record_name']))
+   #        print(
+   #            json.dumps(
+   #                {
+   #                    'message': 'Record not exists, nothing to update',
+   #                    'record': conf['record_name']
+   #                },
+   #                default=str
+   #            )
+   #        )
+   #        conf['response'] = 'Not exists'
+   #else:
+   #   #log.debug('Item with ID: "{}" not exists, nothing to update'.format(conf['ID']))
+   #    print(
+   #        json.dumps(
+   #            {
+   #                'message': 'Item not exists, nothing to update',
+   #                'id': conf['ID']
+   #            },
+   #            default=str
+   #        )
+   #    )
+   #    conf['response'] = 'Not exists'
 
 def response():
     '''Return http response.'''
@@ -516,7 +572,8 @@ def lambda_handler(event, context):
         get_zone_id_from_route53()
         get_record_from_route53()
         if conf['Action'] == 'CREATE':
-            action_create()
+            action_update()
+           #action_create()
         elif conf['Action'] == 'DELETE':
             action_delete()
         elif conf['Action'] == 'UPDATE':
@@ -543,6 +600,7 @@ def lambda_handler(event, context):
 # python3 dns-manager.py CREATE
 if __name__ == "__main__":
     test_event = dict()
+    test_event['headers'] = {'X-Forwarded-For': '127.0.0.1'}
     test_event['body'] = {
        #"Action": "CREATE|DELETE|UPDATE",
         "Action": sys.argv[1],
