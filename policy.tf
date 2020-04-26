@@ -1,7 +1,7 @@
 resource "aws_iam_role" "dns-manager" {
-  name = "dns-manager"
+  name                  = "dns-manager"
   force_detach_policies = true
-  assume_role_policy = <<EOF
+  assume_role_policy    = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -25,7 +25,7 @@ EOF
 
 resource "aws_iam_role_policy" "dns-manager" {
   name = "dns-manager"
-  role = "${aws_iam_role.dns-manager.id}"
+  role = aws_iam_role.dns-manager.id
 
   policy = <<-EOF
   {

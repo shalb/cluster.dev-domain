@@ -3,4 +3,3 @@ provider "aws" {
   secret_key = "0000000000000000000000000000000000000000"
   region     = "eu-central-1"
 }
-

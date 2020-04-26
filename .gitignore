@@ -138,4 +138,3 @@ terraform.tfstate*
 
 # lambda
 lambda_function.json
-

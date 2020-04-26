@@ -85,3 +85,10 @@ See logs [here](https://eu-central-1.console.aws.amazon.com/cloudwatch/home?regi
 ### DB records
 
 See DB records [here](https://eu-central-1.console.aws.amazon.com/dynamodb/home?region=eu-central-1#tables:selected=dns-manager;tab=items).
+
+
+## Terraform
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
