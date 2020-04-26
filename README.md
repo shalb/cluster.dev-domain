@@ -16,8 +16,8 @@ Terraform v0.12.24
 
 ## Add your AWS key
 ~~~~
-cp provider.tf.example provider.tf
-editor provider.tf
+cp main.tf.example main.tf
+editor main.tf
 ~~~~
 
 ## Add lambda to zip file

@@ -130,6 +130,7 @@ dmypy.json
 
 # terraform
 provider.tf
+main.tf
 dns-manager.zip
 .terraform
 terraform.tfstate
