@@ -135,3 +135,6 @@ dns-manager.zip
 terraform.tfstate
 terraform.tfstate*
 
+# lambda
+lambda_function.json
+

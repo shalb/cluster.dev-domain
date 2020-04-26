@@ -4,6 +4,7 @@ import sys
 import traceback
 import os
 import datetime
+import re
 
 import boto3
 
@@ -66,23 +67,38 @@ def validate_event_keys(data):
 
 def validate_event_username(data):
     '''Check if request has valid UserName key.'''
-    pass
+    key = 'UserName'
+    regexp = re.match(r'^[0-9a-zA-Z\-_]+$', data[key])
+    if not regexp:
+        sys.exit('{} value is not valid: "{}"'.format(key, data[key]))
 
 def validate_event_nameservers(data):
     '''Check if request has valid NameServers key.'''
-    pass
+    key = 'NameServers'
+    regexp = re.match(r'^[0-9a-zA-Z\-\.,]+$', data[key])
+    if not regexp:
+        sys.exit('{} value is not valid: "{}"'.format(key, data[key]))
 
 def validate_event_zoneid(data):
     '''Check if request has valid ZoneID key.'''
-    pass
+    key = 'ZoneID'
+    regexp = re.match(r'^[0-9a-zA-Z]+$', data[key])
+    if not regexp:
+        sys.exit('{} value is not valid: "{}"'.format(key, data[key]))
 
 def validate_event_domainname(data):
     '''Check if request has valid DomainName key.'''
-    pass
+    key = 'DomainName'
+    regexp = re.match(r'^[0-9a-zA-Z\-\.]+$', data[key])
+    if not regexp:
+        sys.exit('{} value is not valid: "{}"'.format(key, data[key]))
 
 def validate_event_email(data):
     '''Check if request has valid Email key.'''
-    pass
+    key = 'Email'
+    regexp = re.match(r'^[0-9a-zA-Z\-\.@]+$', data[key])
+    if not regexp:
+        sys.exit('{} value is not valid: "{}"'.format(key, data[key]))
 
 def data_from_event_to_config(event):
     '''Add data from "event" to dictionary with config options.'''
@@ -102,8 +118,15 @@ def data_from_event_to_config(event):
 
 def check_if_request_authorized():
     '''Check if request has valid input and permissions to manage records.'''
-    # Not sure what we can check, because every ID which is not in DB should be created...
-    pass
+    if not conf['dynamodb_record']:
+        return
+    provided_id = conf['ID']
+    current_id = conf['dynamodb_record']['ID']['S']
+    provided_password = conf['ZoneID']
+    current_password = conf['dynamodb_record']['ZoneID']['S']
+    if provided_id == current_id:
+        if provided_password != current_password:
+            sys.exit('Wrong password to change record')
 
 def get_zone_id_from_route53():
     '''Get zone id in route53 for main domain (DomainName).'''
@@ -599,25 +622,8 @@ def lambda_handler(event, context):
 # Execute only if run as a script, example:
 # python3 dns-manager.py CREATE
 if __name__ == "__main__":
-    test_event = dict()
-    test_event['headers'] = {'X-Forwarded-For': '127.0.0.1'}
-    test_event['body'] = {
-       #"Action": "CREATE|DELETE|UPDATE",
-        "Action": sys.argv[1],
-        "UserName": "MY-USER",
-        "NameServers": "ns-1.my-domain.local.lan.,ns-2.my-domain.local.lan.",
-        "ZoneID": "000000000AAAAAAAAAAA",
-        "DomainName": "my-domain.local.lan",
-        "Email": "my-user@my-domain.local.lan"
-    }
-    test_event['body'] = {
-        "Action": sys.argv[1],
-        "UserName": "gelo22",
-        "NameServers": "ns-578.awsdns-08.net.,ns-499.awsdns-62.com.,ns-1193.awsdns-21.org.,ns-1715.awsdns-22.co.uk.",
-        "ZoneID": "Z06877161DK1SC4LDL8T3",
-        "DomainName": "cluster.dev",
-        "Email": "gelo@shalb.com"
-    }
-
+    with open('./lambda_function.json') as json_file:
+        test_event = json.load(json_file)
+    test_event['body']['Action'] = sys.argv[1]
     print(lambda_handler(test_event, None))
 

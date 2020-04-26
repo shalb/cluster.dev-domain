@@ -1,0 +1,13 @@
+{
+    "headers": {
+        "X-Forwarded-For": "127.0.0.1"
+    },
+    "body": {
+        "Action": "CREATE|DELETE|UPDATE",
+        "UserName": "gelo22",
+        "NameServers": "ns-578.awsdns-08.net.,ns-499.awsdns-62.com.,ns-1193.awsdns-21.org.,ns-1715.awsdns-22.co.uk.",
+        "ZoneID": "Z06877161DK1SC4LDL8T3",
+        "DomainName": "cluster.dev",
+        "Email": "gelo@shalb.com"
+    }
+}
