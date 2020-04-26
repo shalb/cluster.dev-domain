@@ -5,6 +5,6 @@ terraform {
     region = "eu-central-1"
   }
   required_providers {
-    aws = "~> 2.23"
+    aws = "~> 2.57"
   }
 }

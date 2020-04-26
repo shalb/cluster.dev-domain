@@ -626,4 +626,3 @@ if __name__ == "__main__":
         test_event = json.load(json_file)
     test_event['body']['Action'] = sys.argv[1]
     print(lambda_handler(test_event, None))
-
