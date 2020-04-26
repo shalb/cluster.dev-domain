@@ -32,11 +32,11 @@ repos:
 # TERRAFORM #
 #############
 - repo: git://github.com/antonbabenko/pre-commit-terraform
-  rev: v1.30.0
+  rev: v1.22.0
   hooks:
     - id: terraform_fmt
-    # - id: terraform_docs
-    # - id: terraform_validate
+    - id: terraform_docs
+    - id: terraform_validate
 
 ##########
 # PYTHON #
@@ -60,8 +60,8 @@ repos:
     - id: autopep8
       language_version: python3
 
-# - repo: https://github.com/pre-commit/mirrors-pylint
-#   rev: v2.3.1
-#   hooks:
-#     - id: pylint
-#       language_version: python3
+- repo: https://github.com/pre-commit/mirrors-pylint
+  rev: v2.3.1
+  hooks:
+    - id: pylint
+      language_version: python3

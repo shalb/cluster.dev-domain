@@ -90,5 +90,11 @@ See DB records [here](https://eu-central-1.console.aws.amazon.com/dynamodb/home?
 ## Terraform
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| region | The AWS region. | string | `"eu-central-1"` | no |
+| s3\_backend\_bucket | The s3 backend bucket | string | `"dns-manager-state"` | no |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
