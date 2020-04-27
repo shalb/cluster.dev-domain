@@ -9,9 +9,14 @@
 ### Add your AWS key
 
 ```bash
-cp main.tf.example main.tf
-editor main.tf
+export AWS_ACCESS_KEY_ID='00000000000000000000'
+export AWS_SECRET_ACCESS_KEY='0000000000000000000000000000000000000000'
+export AWS_DEFAULT_REGION='eu-central-1'
 ```
+
+### Create S3 bucket
+
+Versioning should be enabled, see [documentation](https://www.terraform.io/docs/backends/types/s3.html)
 
 ### Add lambda to zip file
 
@@ -22,6 +27,7 @@ zip dns-manager.zip lambda_function.py
 ### Apply
 
 ```bash
+terraform init
 terraform apply
 ```
 
@@ -98,3 +104,21 @@ See DB records [here](https://eu-central-1.console.aws.amazon.com/dynamodb/home?
 | s3\_backend\_bucket | The s3 backend bucket | string | `"dns-manager-state"` | no |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Contribute
+
+If you change current code, then you should test it.
+
+Use some separate AWS account for tests, because successful `terraform apply` in vorking environment is not enough.  
+You should apply it from scratch.
+
+Create separate s3 bucket, change it in `terraform.tf`, apply changes.
+
+```bash
+editor terraform.tf
+terraform init
+terraform apply
+```
+
+Create and delete test records via API gateway.
+

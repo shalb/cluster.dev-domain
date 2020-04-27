@@ -4,8 +4,8 @@ variable "region" {
   description = "The AWS region."
 }
 
-variable "s3_backend_bucket" {
+variable "dynamodb_table_backend" {
   type        = string
   default     = "dns-manager-state"
-  description = "The s3 backend bucket"
+  description = "Dynamodb table, which needed for s3 backend bucket"
 }
