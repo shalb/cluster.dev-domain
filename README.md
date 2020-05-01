@@ -88,6 +88,8 @@ curl -H "Content-Type: application/json" -d '
 
 See logs [here](https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#logStream:group=/aws/lambda/dns-manager;streamFilter=typeLogStreamPrefix).
 
+See filtered exceptions [here](https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#logs-insights:queryDetail=~(end~0~start~-518400~timeType~'RELATIVE~unit~'seconds~editorString~'fields*20*40timestamp*2c*20*40message*0a*7c*20filter*20message*3d*22Exception*22*0a*7c*20sort*20*40timestamp*20desc*0a*7c*20limit*2020~isLiveTail~false~queryId~'992e9724-9a6e-4f7a-bc7b-6901e39e723a~source~(~'*2faws*2flambda*2fdns-manager))) (click `Run query`)
+
 ### DB records
 
 See DB records [here](https://eu-central-1.console.aws.amazon.com/dynamodb/home?region=eu-central-1#tables:selected=dns-manager;tab=items).
@@ -109,7 +111,7 @@ See DB records [here](https://eu-central-1.console.aws.amazon.com/dynamodb/home?
 
 If you change current code, then you should test it.
 
-Use some separate AWS account for tests, because successful `terraform apply` in vorking environment is not enough.  
+Use some separate AWS account for tests, because successful `terraform apply` in working environment is not enough.  
 You should apply it from scratch.
 
 Create separate s3 bucket, change it in `terraform.tf`, apply changes.
