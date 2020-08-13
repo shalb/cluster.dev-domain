@@ -97,9 +97,11 @@ def validate_event_nameservers(data):
 def validate_event_zoneid(data):
     '''Check if request has valid ZoneID key.'''
     key = 'ZoneID'
-    regexp = re.match(r'^[0-9a-zA-Z]+$', data[key])
-    if not regexp:
+    if len(data[key]) > 512:
         sys.exit('{} value is not valid: "{}"'.format(key, data[key]))
+   #regexp = re.match(r'^[0-9a-zA-Z]+$', data[key])
+   #if not regexp:
+   #    sys.exit('{} value is not valid: "{}"'.format(key, data[key]))
 
 
 def validate_event_domainname(data):
