@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# terraform
+dns-manager.zip
+.terraform
+terraform.tfstate
+terraform.tfstate*
+
+# lambda
+lambda_function.json
