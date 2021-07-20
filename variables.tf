@@ -30,3 +30,9 @@ variable "email" {
   default     = "domain-request@cluster.dev"
   description = "email of user which requests a default zone"
 }
+
+variable "private_zone" {
+  type        = bool
+  default     = false
+  description = "Used with cluster_domain field to get a private Hosted Zone."
+}

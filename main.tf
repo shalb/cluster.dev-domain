@@ -1,8 +1,9 @@
 # If DNS zone is provided by user.
 # Use it to create subzone
 data "aws_route53_zone" "existing" {
-  count = tobool(var.zone_delegation) ? 0 : 1
-  name  = "${var.cluster_domain}."
+  count        = tobool(var.zone_delegation) ? 0 : 1
+  name         = "${var.cluster_domain}."
+  private_zone = var.private_zone
 }
 
 resource "aws_route53_zone" "sub" {
