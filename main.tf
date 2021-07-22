@@ -10,8 +10,11 @@ resource "aws_route53_zone" "sub" {
   name          = "${var.cluster_name}.${var.cluster_domain}"
   force_destroy = true
 
-  vpc {
-    vpc_id = var.vpc_id
+  dynamic "vpc" {
+    for_each = var.vpc_id != "" ? [1] : []
+    content {
+      vpc_id = var.vpc_id
+    }
   }
 }
 
