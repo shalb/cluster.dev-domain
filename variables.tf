@@ -36,3 +36,9 @@ variable "private_zone" {
   default     = false
   description = "Used with cluster_domain field to get a private Hosted Zone."
 }
+
+variable "vpc_id" {
+  type        = string
+  default     = ""
+  description = "Default domain for cluster records"
+}
