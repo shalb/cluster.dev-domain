@@ -33,6 +33,7 @@ and returns zone_id and name_servers.
 | email | email of user which requests a default zone | `string` | `"domain-request@cluster.dev"` | no |
 | region | The AWS region. | `string` | n/a | yes |
 | zone\_delegation | If true - a NS records in cluster\_domain(cluster.dev) to be created by external scripts | `string` | `false` | no |
+| private\_zone | If you use cluster\_domain field for private Hosted Zone, you need to add private_zone field to true | `bool` | `false` | no |
 
 ## Outputs
 

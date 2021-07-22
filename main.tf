@@ -1,13 +1,21 @@
 # If DNS zone is provided by user.
 # Use it to create subzone
 data "aws_route53_zone" "existing" {
-  count = tobool(var.zone_delegation) ? 0 : 1
-  name  = "${var.cluster_domain}."
+  count        = tobool(var.zone_delegation) ? 0 : 1
+  name         = "${var.cluster_domain}."
+  private_zone = var.private_zone
 }
 
 resource "aws_route53_zone" "sub" {
   name          = "${var.cluster_name}.${var.cluster_domain}"
   force_destroy = true
+
+  dynamic "vpc" {
+    for_each = var.vpc_id != "" ? [1] : []
+    content {
+      vpc_id = var.vpc_id
+    }
+  }
 }
 
 resource "aws_route53_record" "sub-ns" {
